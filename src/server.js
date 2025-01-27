@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { env } from './utils/env.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import movieRouter from './routers/movies.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -19,6 +20,7 @@ export const startServer = () => {
   //     },
   //   }),
   // );
+  app.use(movieRouter);
 
   app.get('/', (req, res) => {
     res.json({
