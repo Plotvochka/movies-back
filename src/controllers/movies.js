@@ -1,8 +1,41 @@
 import * as movieService from '../services/movies.js';
 import createHttpError from 'http-errors';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseFilterParams } from '../utils/parseMovieFilterParams.js';
 
-export const addMovie = async (req, res) => {
-  const movie = await movieService.addMovie(req.body);
+export const getMoviesController = async (req, res) => {
+  const { page, perPage } = parsePaginationParams(req.query);
+  const filter = parseFilterParams(req.query);
+  const movies = await movieService.getAllMovies({ page, perPage, filter });
+
+  res.json({
+    status: 200,
+    message: 'Successfully found movies!',
+    data: movies,
+  });
+};
+
+export const getMovieByIdController = async (req, res) => {
+  const { id: _id } = req.params;
+  console.log(_id);
+  const movies = await movieService.getMovieById(_id);
+
+  if (!movies) {
+    res.status(404).json({
+      message: 'Movie not found',
+    });
+    return;
+  }
+
+  res.json({
+    status: 200,
+    message: `Successfully found movies with id ${_id}!`,
+    data: movies,
+  });
+};
+
+export const addMovieController = async (req, res) => {
+  const movie = await movieService.addMovieService(req.body);
 
   res.status(201).json({
     status: 201,
@@ -11,7 +44,7 @@ export const addMovie = async (req, res) => {
   });
 };
 
-export const updateMovie = async (req, res) => {
+export const updateMovieController = async (req, res) => {
   const { id: _id } = req.params;
   const payload = {};
   const {
@@ -23,6 +56,7 @@ export const updateMovie = async (req, res) => {
     rating,
     releaseDate,
     image,
+    isFavourite,
   } = req.body;
   if (title) {
     payload.title = title;
@@ -48,11 +82,13 @@ export const updateMovie = async (req, res) => {
   if (image) {
     payload.image = image;
   }
-  const updatedMovie = await movieService.updateMovies({
+  if (isFavourite) {
+    payload.isFavourite = isFavourite;
+  }
+  const updatedMovie = await movieService.updateMoviesService({
     payload,
     _id,
   });
-  console.log(updateMovie);
   res.json({
     status: 200,
     message: 'Successfully updated the movie!',
@@ -60,10 +96,10 @@ export const updateMovie = async (req, res) => {
   });
 };
 
-export const deleteMovie = async (req, res) => {
+export const deleteMovieController = async (req, res) => {
   const { id: _id } = req.params;
 
-  const data = await movieService.deleteMovie({ _id });
+  const data = await movieService.deleteMovieService({ _id });
   if (!data) {
     throw createHttpError(404, `Movie with id=${_id} not found`);
   }

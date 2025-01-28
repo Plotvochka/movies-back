@@ -5,6 +5,7 @@ const moviesSchema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'user',
+      required: true,
     },
     title: {
       type: String,
@@ -31,7 +32,7 @@ const moviesSchema = new Schema(
       required: true,
     },
     releaseDate: {
-      type: String,
+      type: Number,
       required: true,
     },
     image: {
@@ -39,6 +40,7 @@ const moviesSchema = new Schema(
       required: true,
       default: null,
     },
+    isFavourite: { type: Boolean, default: false },
   },
   { timestamps: true, versionKey: false },
 );
