@@ -10,4 +10,4 @@ export const addMovieSchema = Joi.object({
   releaseDate: Joi.number().optional(),
   image: Joi.string().optional(),
   isFavourite: Joi.boolean().default(false),
-});
+}).unknown(false);
